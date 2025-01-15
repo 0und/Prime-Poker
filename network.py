@@ -15,7 +15,7 @@ class Game_Controller():
 
     def send_to(self, name, msg):
         if isinstance(msg, dict):
-            msg = f'{msg.get('name')}: {msg.get('action')}ed {msg.get('content')}'
+            msg = f"{msg.get('name')}: {msg.get('action')}ed {msg.get('content')}"
         msg = ('\n' + str(msg)).encode()
         self.conns[name].sendall(msg)
     def run(self):
