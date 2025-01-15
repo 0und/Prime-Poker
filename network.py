@@ -131,7 +131,7 @@ def restart():
 def restarter():
     while True:
         cmd = input('>')
-        if cmd[0] == 'r':
+        if cmd and cmd[0] == 'r':
             restart()
 
 
