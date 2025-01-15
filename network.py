@@ -54,6 +54,7 @@ class Game_Controller():
                     if not cont: continue
                     nbs = re.findall(r'\d+', cont)
                     nbs = [int(nb) for nb in nbs]
+                    nbs = [nb for nb in nbs if nb > 0 and nb < 14]
                     for card in G.find_player(msg['name']).hand:
                         if not nbs: break
                         if isinstance(card, game.Card) and card.suit == 'Joker':
