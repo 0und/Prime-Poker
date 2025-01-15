@@ -50,6 +50,8 @@ def start_client(port = port, name = ''):
             message = {'action': 'draw', 'name': name}
         elif msg[0] == 'S':
             message = {'action': 'status', 'name': name}
+        elif msg[0] == 't':
+            message = {'action': 'transfer', 'name': name, 'content': msg}
         else:
             message = {'action': 'play', 'name': name, 'content': msg}
         client.sendall(str(message).encode())

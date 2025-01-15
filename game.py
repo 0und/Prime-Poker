@@ -76,6 +76,7 @@ class Game:
             player_list: {[str(player) for player in self.players]} \n
             cards: {[len(player.hand) for player in self.players]} \n
             highest: {self.highest} \n
+            current_player: {self.current_player} \n
             starter: {self.starter} \n
             reversed: {self.reversed}\n'''
 
@@ -146,10 +147,7 @@ class Game:
         if self.current_player == self.starter:
             self.clear_round()
         ok, message = self.compare(comb, self.highest)
-        if ok:
-            self.highest = comb
-            self.starter = self.current_player
-        else:
+        if not ok:
             return False, message 
         hand_copy = self.current_player.hand.copy()
         for card in cards:
@@ -161,6 +159,8 @@ class Game:
         for card in cards:
             self.current_player.hand.remove(card) 
         if not self.empty(): self.skip()
+        self.highest = comb
+        self.starter = self.current_player
         return True, f'Cards played by {self.current_player} successfully'
             
     def draw(self):

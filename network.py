@@ -1,5 +1,5 @@
 #! /usr/local/bin/python3
-import socket, sys, threading, time
+import socket, sys, threading, time, re
 import game, env
 from game import Player
 G = None
@@ -14,6 +14,8 @@ class Game_Controller():
         self.conns[name] = conn
 
     def send_to(self, name, msg):
+        if isinstance(msg, dict):
+            msg = f'{msg.get('name')}: {msg.get('action')}ed {msg.get('content')}'
         msg = ('\n' + str(msg)).encode()
         self.conns[name].sendall(msg)
     def run(self):
@@ -36,7 +38,9 @@ class Game_Controller():
                     G.start()
                     self.sendall(f'Game started, the first player is {G.current_player.name}')
                     continue
-                if not G: continue 
+                if not G: 
+                    self.send_to(msg['name'], 'No game started')
+                    continue 
                 if msg['action'] == 'show':
                     player = G.find_player(msg['name'])  
                     if not player: continue
@@ -44,6 +48,16 @@ class Game_Controller():
                     continue
                 elif msg['action'] == 'status':
                     self.send_to(msg['name'], str(G))
+                    continue
+                elif msg['action'] == 'transfer':
+                    msg = msg.get('content')
+                    if not msg: continue
+                    nbs = re.findall(r'\d+', msg)
+                    nbs = [int(nb) for nb in nbs]
+                    for card in G.find_player(msg['name']).hand:
+                        if not nbs: break
+                        if isinstance(card, game.Card) and card.suit == 'Joker':
+                            card.value = nbs.pop(0)
                     continue
 
                 if G.current_player.name != msg['name']:
