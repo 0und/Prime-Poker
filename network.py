@@ -15,7 +15,7 @@ class Game_Controller():
 
     def send_to(self, name, msg):
         if isinstance(msg, dict):
-            msg = f"{msg.get('name')}: {msg.get('action')}ed {msg.get('content')}"
+            msg = f"{msg.get('name')}: {msg.get('action')}ed {msg.get('content', '')}"
         msg = ('\n' + str(msg)).encode()
         self.conns[name].sendall(msg)
     def run(self):
@@ -50,9 +50,9 @@ class Game_Controller():
                     self.send_to(msg['name'], str(G))
                     continue
                 elif msg['action'] == 'transfer':
-                    msg = msg.get('content')
-                    if not msg: continue
-                    nbs = re.findall(r'\d+', msg)
+                    cont = msg.get('content')
+                    if not cont: continue
+                    nbs = re.findall(r'\d+', cont)
                     nbs = [int(nb) for nb in nbs]
                     for card in G.find_player(msg['name']).hand:
                         if not nbs: break
