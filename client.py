@@ -1,6 +1,6 @@
 #! /usr/local/bin/python3
 import socket, threading, time, sys
-port = 60011 
+port = 60012
 # host = 'silvertech.duckdns.org'
 host = '10.0.0.152'
 help_msg = '''Commands: 
@@ -54,6 +54,7 @@ def start_client(port = port, name = ''):
             message = {'action': 'transfer', 'name': name, 'content': msg}
         else:
             message = {'action': 'play', 'name': name, 'content': msg}
+        print(message)
         client.sendall(str(message).encode())
         time.sleep(1)
 

@@ -21,6 +21,9 @@ class Card:
             value = other
         return self.value == value 
 
+    def as_dict(self):
+        return {'suit': self.suit, 'value': self.value}
+
 class Deck:
     def __init__(self):
         self.cards = []
@@ -63,6 +66,9 @@ class Player:
     def show_hand(self):
         return [str(card) for card in self.hand]
     
+    def hand_as_dict(self):
+        return [c.as_dict() for c in self.hand]
+    
     def __str__(self):
         return self.name
 
@@ -86,12 +92,13 @@ class Game:
                 return player
         return
 
-    def __init__(self, players):
+    def __init__(self, players, controller):
+        self.players = []
+        for name in players:
+            self.players.append(Player(name))
+        self.controller = controller
         self.deck = Deck()
         self.deck.shuffle()
-        self.players = []
-        for player in players:
-            self.players.append(Player(player))
 
     def start(self):
         'Start the game'
@@ -102,7 +109,9 @@ class Game:
         self.current_id = random.randint(0, len(self.players) - 1)
         self.current_player = self.players[self.current_id]
         self.starter = self.current_player
-
+        # After dealing cards, send updated hands
+        for p in self.players:
+            self.controller.send_to(p.name, {"cards": p.hand_as_dict()})
 
     def clear_round(self):
         'Clear the round'
@@ -183,5 +192,3 @@ class Game:
         
 if __name__ == '__main__':
     pass
-
-    

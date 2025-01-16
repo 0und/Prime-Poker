@@ -2,6 +2,8 @@
 import socket, sys, threading, time, re
 import game, env
 from game import Player
+import json
+
 G = None
 class Game_Controller():
     msgs = []
@@ -15,7 +17,10 @@ class Game_Controller():
 
     def send_to(self, name, msg):
         if isinstance(msg, dict):
-            msg = f"{msg.get('name')}: {msg.get('action')}ed {msg.get('content', '')}"
+            if 'cards' in msg:
+                msg = json.dumps(msg)
+            else:
+                msg = f"{msg.get('name')}: {msg.get('action')}ed {msg.get('content', '')}"
         msg = ('\n' + str(msg)).encode()
         self.conns[name].sendall(msg)
     def run(self):
@@ -34,17 +39,19 @@ class Game_Controller():
                 elif msg['action'] == 'start':
                     if G: continue
                     players = list(self.conns.keys())
-                    G = game.Game(players)
+                    G = game.Game(players, controller=self)
                     G.start()
+                    print(G, G.players, players)
                     self.sendall(f'Game started, the first player is {G.current_player.name}')
                     continue
                 if not G: 
                     self.send_to(msg['name'], 'No game started')
                     continue 
                 if msg['action'] == 'show':
-                    player = G.find_player(msg['name'])  
+                    player = G.find_player(msg['name'])
                     if not player: continue
-                    self.send_to(player.name, f'Your hand: {player.show_hand()}')
+                    print(f'send to {msg["name"]}, {player.name}', {"cards": G.find_player(msg['name']).hand_as_dict()})
+                    self.send_to(player.name, {"cards": player.hand_as_dict()})
                     continue
                 elif msg['action'] == 'status':
                     self.send_to(msg['name'], str(G))
@@ -59,6 +66,7 @@ class Game_Controller():
                         if not nbs: break
                         if isinstance(card, game.Card) and card.suit == 'Joker':
                             card.value = nbs.pop(0)
+                    self.send_to(msg['name'], {"cards": G.find_player(msg['name']).hand_as_dict()})
                     continue
 
                 if G.current_player.name != msg['name']:
@@ -72,13 +80,18 @@ class Game_Controller():
                         self.send_to(msg['name'], ans)
                     else: 
                         self.sendall(msg)
+                        player = G.find_player(msg['name'])
+                        self.send_to(msg['name'], {"cards": player.hand_as_dict()})
                         if not G.current_player.hand:
                             self.sendall(f'{G.current_player.name} wins')
                 elif msg['action'] == 'draw':
                     ok, ans = G.draw()
                     if not ok:
                         self.send_to(msg['name'], ans)
-                    else: self.sendall(msg)
+                    else: 
+                        self.sendall(msg)
+                        player = G.find_player(msg['name'])
+                        self.send_to(msg['name'], {"cards": player.hand_as_dict()})
 
             if isinstance(G,game.Game) and G.empty():
                 restart()
