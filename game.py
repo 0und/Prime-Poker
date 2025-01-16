@@ -1,6 +1,7 @@
-import random
+import random, time
 from typing import Optional
 import env, lib
+random.seed(time.time())
 class Card:
     def __init__(self, suit, val):
         self.suit = suit
@@ -121,13 +122,13 @@ class Game:
             return True, 'Ramanujan Number'
         if comb.length != highest.length:
             res = False
-            message = 'Cards length not equal'
+            return res, 'Cards length not equal'
         elif self.reversed:
             res =  power1 < power2
         else:
             res =  power1 > power2
         if not res:
-            message = 'greater' if self.reversed else 'smaller'
+            message = 'smaller' if self.reversed else 'greater'
             message = f'Card power should be {message} than the previous one, which is {power2}'
         return res, message
 
@@ -186,6 +187,7 @@ class Game:
 
         
 if __name__ == '__main__':
-    pass
-
+    g = Game(['Alice', 'Bob', 'Charlie'])
+    g.start()
+    print(g.compare(lib.get_cards('5 6 3'), lib.get_cards('13')))
     

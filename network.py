@@ -57,7 +57,7 @@ class Game_Controller():
                     nbs = [nb for nb in nbs if nb > 0 and nb < 14]
                     for card in G.find_player(msg['name']).hand:
                         if not nbs: break
-                        if isinstance(card, game.Card) and card.suit == 'Joker':
+                        if isinstance(card, game.Card) and card.suit == '🤡':
                             card.value = nbs.pop(0)
                     continue
 
@@ -65,7 +65,9 @@ class Game_Controller():
                     self.send_to(msg['name'], 'Not your turn')
                     continue
                 if msg['action'] == 'skip':
+                    self.sendall(msg)
                     G.skip()
+                    continue
                 elif msg['action'] == 'play':
                     ok, ans = G.play(msg['content'])
                     if not ok:
