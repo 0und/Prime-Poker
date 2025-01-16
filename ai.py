@@ -14,6 +14,7 @@ def get_largest_prime(nbs):
     nbs = [str(nb) for nb in nbs]
     ans = 0
     for i in range(len(nbs)):
+        i = 5
         ls = comb(nbs, i+1)
         for l in ls:
             num = int(''.join(l))
@@ -21,4 +22,4 @@ def get_largest_prime(nbs):
                 ans = num
     return ans
 
-print(get_largest_prime(map(int, '7 2 9 13 12 12'.split())))
+print(get_largest_prime(map(int, '13 12 7 5 11 13 1'.split())))

@@ -16,8 +16,13 @@ def get_cards(statement):
         tree = ast.parse(expression, mode='eval')
     except SyntaxError:
         return None
-    if not eval(expression):
+    try:
+        val = ast.literal_eval(expression)
+        if not val:
+            return None
+    except ValueError:
         return None
+
     for s in statement:
         if not s.isdigit() and s not in '=*() ': return None
     if len(re.findall('=', statement)) not in [0,2]: return None
@@ -34,6 +39,11 @@ def get_cards(statement):
         comb.power = eval(expression)
         comb.length = len(re.findall(r'\d+', statement))
         right = expression 
+    val = ast.literal_eval(right)
+    if val in [57, 1729]:
+        comb.power = val
+        comb.success = True
+        return comb
     right_numbers = re.findall(r'\d+', right)
     for number in right_numbers:
         if not is_prime(int(number)):

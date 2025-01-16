@@ -17,7 +17,8 @@ class Game_Controller():
         if isinstance(msg, dict):
             msg = f"{msg.get('name')}: {msg.get('action')}ed {msg.get('content', '')}"
         msg = ('\n' + str(msg)).encode()
-        self.conns[name].sendall(msg)
+        if name in self.conns:
+            self.conns[name].sendall(msg)
     def run(self):
         global G
         while True:
@@ -75,7 +76,7 @@ class Game_Controller():
                             self.sendall(ans)
                             nb = int(re.findall(r'\d+', ans)[0])
                             for i in range(nb):
-                                G.draw()
+                                G.draw(force = True)
                         else: self.send_to(msg['name'], ans)
 
                     else: 
@@ -140,8 +141,11 @@ def restart():
 def restarter():
     while True:
         cmd = input('>')
-        if cmd and cmd[0] == 'r':
+        if not cmd: continue
+        if cmd[0] == 'r':
             restart()
+        elif cmd[0] == 'S':
+            print(str(G))
 
 
 if __name__ == '__main__':

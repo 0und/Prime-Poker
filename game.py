@@ -45,6 +45,7 @@ class Deck:
             self.cards[i], self.cards[r] = self.cards[r], self.cards[i]
 
     def drawCard(self):
+        if not self.cards: return
         return self.cards.pop()
 
 
@@ -116,7 +117,10 @@ class Game:
         message = ''
         power1 = comb.power
         power2 = highest.power
-        if power1 == 57: return True, 'Grothendieck Prime'
+        if power1 == 57: 
+            return True, 'Grothendieck Prime'
+        if power2 == 57:
+            return False, 'Grothendieck Prime'
         if power1 == 1729:
             self.reversed = not self.reversed
             return True, 'Ramanujan Number'
@@ -145,10 +149,11 @@ class Game:
     def play(self, statement):
         'Let current player play'
         comb = lib.get_cards(statement)
-        if not comb or not comb.success: return None, 'Expression illegal'
+        if not isinstance(comb, lib.Comb): return None, 'Expression illegal'
         numbers= comb.numbers
         cards = [Card('Spades', int(number)) for number in numbers]
         punish = f', punish {len(cards)}'
+        if not comb.success: return None, 'Expression illegal' + punish
         if not cards: return None, f'Cards illegal' + punish
         if self.current_player == self.starter:
             self.clear_round()
@@ -169,9 +174,9 @@ class Game:
         self.highest = comb
         return True, f'Cards played by {self.current_player} successfully'
             
-    def draw(self):
+    def draw(self, force = False):
         'Draw a card for the current player'
-        if not self.current_player.drew:
+        if force or not self.current_player.drew:
             ans = self.current_player.draw(self.deck)
             if not ans: return False, 'No card left'
             self.current_player.drew = True
