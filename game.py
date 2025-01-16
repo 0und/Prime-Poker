@@ -27,12 +27,12 @@ class Deck:
         self.build()
 
     def build(self):
-        for s in ["Spades", "Hearts", "Clubs", "Diamonds"]:
+        for s in ["♠️", "♥️", "♦️", "♣️"]:
             for v in range(1, 14):
                 self.cards.append(Card(s, v))
         # input jokers
-        self.cards.append(Card('Joker', 0))
-        self.cards.append(Card('Joker', 0))
+        for i in range(2):
+            self.cards.append(Card('🤡', 0))
 
     def show(self):
         for c in self.cards:

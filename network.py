@@ -69,7 +69,13 @@ class Game_Controller():
                 elif msg['action'] == 'play':
                     ok, ans = G.play(msg['content'])
                     if not ok:
-                        self.send_to(msg['name'], ans)
+                        if ans.find('punish') != -1:
+                            self.sendall(ans)
+                            nb = int(re.findall(r'\d+', ans)[0])
+                            for i in range(nb):
+                                G.draw()
+                        else: self.send_to(msg['name'], ans)
+
                     else: 
                         self.sendall(msg)
                         if not G.current_player.hand:

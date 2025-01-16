@@ -21,4 +21,4 @@ def get_largest_prime(nbs):
                 ans = num
     return ans
 
-print(get_largest_prime([5,6,7,10,12]))
+print(get_largest_prime([10,7,8,12,4]))
