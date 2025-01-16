@@ -145,27 +145,28 @@ class Game:
     def play(self, statement):
         'Let current player play'
         comb = lib.get_cards(statement)
-        if not comb: return None, 'Expression illegal'
+        if not comb or not comb.success: return None, 'Expression illegal'
         numbers= comb.numbers
         cards = [Card('Spades', int(number)) for number in numbers]
-        if not cards: return None, 'Cards illegal'
+        punish = f', punish {len(cards)}'
+        if not cards: return None, f'Cards illegal' + punish
         if self.current_player == self.starter:
             self.clear_round()
         ok, message = self.compare(comb, self.highest)
         if not ok:
-            return False, message 
+            return False, message  + punish
         hand_copy = self.current_player.hand.copy()
         for card in cards:
             if card not in hand_copy:
                 # for i in range(len(cards)):
                     # self.current_player.draw(self.deck)
-                return False, f'Card {card} not in hand, punish {len(cards)}'
+                return False, f'Card {card} not in hand' + punish
             hand_copy.remove(card)
         for card in cards:
             self.current_player.hand.remove(card) 
+        self.starter = self.current_player
         if not self.empty(): self.skip()
         self.highest = comb
-        self.starter = self.current_player
         return True, f'Cards played by {self.current_player} successfully'
             
     def draw(self):

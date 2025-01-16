@@ -5,6 +5,7 @@ class Comb:
     numbers = []
     power = 0
     length = 0
+    success = False
     def __str__(self):
         return f'Cards: {self.numbers}, Power: {self.power}, Length: {self.length}'
 
@@ -24,7 +25,7 @@ def get_cards(statement):
     comb.numbers = re.findall(r'\d+', statement)
     if isinstance(tree.body, ast.Compare):
         if not isinstance(tree.body.left, ast.Constant):
-            return None
+            return comb
         left = statement[:statement.index('=')] 
         comb.power = eval(left.replace(' ', ''))
         comb.length = len(re.findall(r'\d+', left))
@@ -36,7 +37,8 @@ def get_cards(statement):
     right_numbers = re.findall(r'\d+', right)
     for number in right_numbers:
         if not is_prime(int(number)):
-            return None
+            return comb
+    comb.success = True
     return comb
 
 if __name__ == '__main__':
