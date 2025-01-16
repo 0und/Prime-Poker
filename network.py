@@ -78,8 +78,8 @@ class Game_Controller():
 
                     else: 
                         self.sendall(msg)
-                        if not G.current_player.hand:
-                            self.sendall(f'{G.current_player.name} wins')
+                        if not G.last_player().hand:
+                            self.sendall(f'{G.last_player().name} wins')
                 elif msg['action'] == 'draw':
                     ok, ans = G.draw()
                     if not ok:
